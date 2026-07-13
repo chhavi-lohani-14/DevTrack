@@ -1,15 +1,10 @@
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from app.schemas import TaskCreate, Task
+from app.database import engine, Base
+from app.models import Task
 
 app = FastAPI()
-
-
-class TaskCreate(BaseModel):
-    title: str
-    priority: str
-
-class Task(TaskCreate):
-    id: int
+Base.metadata.create_all(bind=engine)
 
 tasks = []
 next_id = 1
