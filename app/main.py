@@ -1,7 +1,9 @@
-from fastapi import FastAPI, HTTPException
-from app.schemas import TaskCreate, Task
-from app.database import engine, Base
+from fastapi import FastAPI, HTTPException, Depends
+from app.schemas import TaskCreate, TaskResponse
+from app.database import engine, Base, get_db
 from app.models import Task
+from sqlalchemy.orm import Session
+
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
@@ -15,18 +17,23 @@ def home():
     return {"message": "Welcome to DevTrack!"}
 
 
-@app.post("/tasks")
-def create_task(task: TaskCreate):
-    global next_id
-    new_task = Task(id=next_id, 
-                    **task.model_dump())
-    
-    tasks.append(new_task)
-    next_id += 1
-    return new_task
+@app.post("/tasks", response_model=TaskResponse)
+def create_task(task: TaskCreate,
+                db: Session = Depends(get_db)
+):
+    db_task = Task(
+        title=task.title,
+        priority=task.priority
+    )
+
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+
+    return db_task
 
 
-@app.get("/tasks")
+'''@app.get("/tasks")
 def get_tasks():
     return tasks
 
@@ -68,4 +75,4 @@ def delete_task(task_id: int):
     raise HTTPException(
         status_code=404,
         detail="Task not found"
-    )
+    )'''

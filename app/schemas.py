@@ -1,9 +1,15 @@
 from pydantic import BaseModel
 
+
 class TaskCreate(BaseModel):
     title: str
     priority: str
 
-class Task(TaskCreate):
+
+class TaskResponse(BaseModel):
     id: int
-    
+    title: str
+    priority: str
+
+    class Config:
+        from_attributes = True
