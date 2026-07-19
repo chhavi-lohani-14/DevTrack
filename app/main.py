@@ -33,21 +33,21 @@ def create_task(task: TaskCreate,
     return db_task
 
 
-'''@app.get("/tasks")
-def get_tasks():
-    return tasks
+@app.get("/tasks", response_model=list[TaskResponse])
+def get_tasks(db: Session = Depends(get_db)):
+    return db.query(Task).all()
 
 
-@app.get("/tasks/{task_id}")
-def get_task(task_id: int):
-    for task in tasks:
-        if task.id == task_id:
-            return task
-    
-    raise HTTPException(
-        status_code=404, 
-        detail="Task not found"
+@app.get("/tasks/{task_id}", response_model=TaskResponse)
+def get_task(task_id: int, db: Session = Depends(get_db)):
+    task = db.query(Task.filter(Task.id == task_id).first())
+    if task is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Task not found"
         )
+    return task
+
 
 @app.put("/tasks/{task_id}")
 def update_task(task_id: int, updated_task: TaskCreate):
@@ -75,4 +75,4 @@ def delete_task(task_id: int):
     raise HTTPException(
         status_code=404,
         detail="Task not found"
-    )'''
+    )
