@@ -125,3 +125,13 @@ def test_delete_task_not_found(client):
     assert response.json() == {
         "detail": "Task not found"
     }
+
+def test_create_task_invalid_data(client):
+    response = client.post(
+        "/tasks",
+        json={
+            "title": "Missing priority"
+        }
+    )
+
+    assert response.status_code == 422
