@@ -117,3 +117,11 @@ def test_delete_task(client):
     response = client.get(f"/tasks/{task_id}")
 
     assert response.status_code == 404
+
+def test_delete_task_not_found(client):
+    response = client.delete("/tasks/999999")
+
+    assert response.status_code == 404
+    assert response.json() == {
+        "detail": "Task not found"
+    }
