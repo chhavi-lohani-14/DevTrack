@@ -6,6 +6,11 @@ class TaskCreate(BaseModel):
     priority: str
 
 
+class TaskUpdate(BaseModel):
+    title: str
+    priority: str
+
+
 class TaskResponse(BaseModel):
     id: int
     title: str
